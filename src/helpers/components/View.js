@@ -139,15 +139,18 @@ const View = ({ track, index = 1, frames = Infinity, children }) => {
   const rect = React.useRef(null)
   const { size, scene } = useThree()
   const [virtualScene] = React.useState(() => new THREE.Scene())
-  const compute = (event, state) => {
-    if (track.current && event.target === track.current) {
-      const { width, height, left, top } = rect.current
-      const x = event.clientX - left
-      const y = event.clientY - top
-      state.pointer.set((x / width) * 2 - 1, -(y / height) * 2 + 1)
-      state.raycaster.setFromCamera(state.pointer, state.camera)
-    }
-  }
+  const compute = React.useCallback(
+    (event, state) => {
+      if (track.current && event.target === track.current) {
+        const { width, height, left, top } = rect.current
+        const x = event.clientX - left
+        const y = event.clientY - top
+        state.pointer.set((x / width) * 2 - 1, -(y / height) * 2 + 1)
+        state.raycaster.setFromCamera(state.pointer, state.camera)
+      }
+    },
+    [rect],
+  )
 
   const [ready, toggle] = React.useReducer(() => true, false)
   React.useEffect(() => {
